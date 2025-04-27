@@ -2,10 +2,11 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public class Triangle extends Drawing{
-    private int x, y, width, height, borderSize;
+    private double x, y, width, height; 
+    private int borderSize;
     private Color color, borderColor;
 
-    public Triangle(int x, int y, int width, int height, Color color){
+    public Triangle(double x, double y, double width, double height, Color color){
         this.x = x;
         this.y = y;
         this.width = width;
@@ -15,7 +16,7 @@ public class Triangle extends Drawing{
         this.borderSize = 0; 
     }
 
-    public Triangle(int x, int y, int width, int height, int borderSize, Color color, Color borderColor){
+    public Triangle(double x, double y, double width, double height, int borderSize, Color color, Color borderColor){
         this.x = x;
         this.y = y;
         this.width = width;
