@@ -1,3 +1,22 @@
+/**
+	This contains the first room in the game. It has all the hints about the experiments happening in this escape room and is made up of buffered images.
+	
+	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
+	@version 20 May 2025
+	
+	I have not discussed the Java language code in my program 
+	with anyone other than my instructor or the teaching assistants 
+	assigned to this course.
+
+	I have not used Java language code obtained from another student, 
+	or any other unauthorized source, either modified or unmodified.
+
+	If any Java language code or documentation used in my program 
+	was obtained from another source, such as a textbook or website, 
+	that has been clearly noted with a proper citation in the comments 
+	of my program.
+**/
+
 import java.awt.image.*;
 import java.util.*;
 import java.io.IOException;
@@ -5,10 +24,18 @@ import javax.imageio.ImageIO;
 
 
 public class ExperimentRoom extends Room{
+
+    /** 
+     * This calls the loadRoom() method
+     **/ 
     public ExperimentRoom(){
         super(loadRoom());
     }
 
+    /**
+     * This creates the ArrayList containing buffered images that makes up the room.
+     * @return items The elements in the ArrayList
+     */
     private static ArrayList<Item> loadRoom(){
         ArrayList<Item> items = new ArrayList<>();
         try{
@@ -20,7 +47,6 @@ public class ExperimentRoom extends Room{
             BufferedImage leftDoor = ImageIO.read(ExperimentRoom.class.getResource("Assets/A1Door.png"));
             BufferedImage rightDoor = ImageIO.read(ExperimentRoom.class.getResource("Assets/A2Door.png"));
             BufferedImage comms = ImageIO.read(ExperimentRoom.class.getResource("Assets/Communicator.png"));
-            BufferedImage pressurePlate = ImageIO.read(ExperimentRoom.class.getResource("Assets/PressurePlate.png"));
             BufferedImage laptop = ImageIO.read(ExperimentRoom.class.getResource("Assets/Laptop.png"));
             BufferedImage screen = ImageIO.read(ExperimentRoom.class.getResource("Assets/Screen.png"));
             BufferedImage metalTable = ImageIO.read(ExperimentRoom.class.getResource("Assets/MetalTableFront.png"));
@@ -37,7 +63,6 @@ public class ExperimentRoom extends Room{
             BufferedImage newspaper = ImageIO.read(ExperimentRoom.class.getResource("Assets/News.png"));
             BufferedImage chair = ImageIO.read(ExperimentRoom.class.getResource("Assets/ChairRight.png"));
             BufferedImage cabinet = ImageIO.read(ExperimentRoom.class.getResource("Assets/Cabinet.png"));
-            BufferedImage scrapPaper = ImageIO.read(ExperimentRoom.class.getResource("Assets/Scrap.png"));
             BufferedImage lockedDoor = ImageIO.read(ExperimentRoom.class.getResource("Assets/FirstDoor.png"));
             BufferedImage stackPaper = ImageIO.read(ExperimentRoom.class.getResource("Assets/PaperStackWritten.png"));
 
@@ -54,6 +79,7 @@ public class ExperimentRoom extends Room{
             BufferedImage icePick = ImageIO.read(ExperimentRoom.class.getResource("Assets/IcePick.png"));
             BufferedImage standScreen = ImageIO.read(ExperimentRoom.class.getResource("Assets/StandingScreen.png"));
             BufferedImage testTube = ImageIO.read(ExperimentRoom.class.getResource("Assets/TestTube.png"));
+            BufferedImage pressurePlate = ImageIO.read(ExperimentRoom.class.getResource("Assets/PressurePlate.png"));
             BufferedImage metalTableSide = ImageIO.read(ExperimentRoom.class.getResource("Assets/MetalTableSide.png"));
 
             //both has it
@@ -92,9 +118,7 @@ public class ExperimentRoom extends Room{
             items.add(new Item(230, 415, 30, 30, stackPaper));
             items.add(new Item(180, 440, 40, 70, chair));
             items.add(new Item(25, 510, 30, 20, newspaper));
-            items.add(new Item(470, 300, 20, 20, scrapPaper));
             items.add(new Item(250, 150, 30, 20, blankPaper));
-            items.add(new Item(465, 220, 30, 30, pressurePlate));
 
             //a2 side only
             items.add(new Item(520, 30, 30, 30, clock));
@@ -102,9 +126,10 @@ public class ExperimentRoom extends Room{
             items.add(new Item(610, 40, 100, 80, screen));
             items.add(new Item(565, 70, 60, 50, screen));
             items.add(new Item(700, 70, 60, 50, screen));
-            items.add(new Item(790, 90, 70, 65, safe));
-            items.add(new Item(865, 30, 60, 125, fridge));
-            items.add(new Item(935, 65, 20, 20, comms));
+            items.add(new Item(825, 90, 70, 65, safe));
+            items.add(new Item(905, 125, 10, 20, phone));
+            items.add(new Item(895, 50, 60, 100, fridge));
+            items.add(new Item(790, 65, 20, 20, comms));
             items.add(new Item(510, 230, 150, 100, wall));
             items.add(new Item(550, 260, 70, 110, electricChair));
             items.add(new Item(760, 260, 120, 60, metalTable));
@@ -120,12 +145,10 @@ public class ExperimentRoom extends Room{
             items.add(new Item(770, 420, 40, 30, testTube));
             items.add(new Item(815, 420, 30, 30, stackPaper));
             items.add(new Item(630, 270, 20, 70, standScreen));
-            items.add(new Item(950, 545, 10, 20, phone));
             items.add(new Item(625, 350, 30, 30, pressurePlate));
             items.add(new Item(700, 500, 100, 40, box));
             items.add(new Item(760, 520, 100, 40, box));
             
-            //will add/delete more things based on need and since we're changing parts of the story but so far this is the first room. I'll add wires in the final.
         } catch (IOException e){
             e.printStackTrace();
         }
