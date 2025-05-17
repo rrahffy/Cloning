@@ -1,36 +1,63 @@
+/**
+	This is the final room that makes up the chasing part of the game. It is a maze with lasers and chasing between the two players.
+	
+	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
+	@version 20 May 2025
+	
+	I have not discussed the Java language code in my program 
+	with anyone other than my instructor or the teaching assistants 
+	assigned to this course.
+
+	I have not used Java language code obtained from another student, 
+	or any other unauthorized source, either modified or unmodified.
+
+	If any Java language code or documentation used in my program 
+	was obtained from another source, such as a textbook or website, 
+	that has been clearly noted with a proper citation in the comments 
+	of my program.
+**/
+
 import java.awt.image.*;
 import java.util.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class TheresholdRoom extends Room{
+
+    /**
+     * This loads the last room
+     */
     public TheresholdRoom(){
         super(loadRoom());
     }
 
+    /**
+     * This loads the room's contents based on what is in the ArrayList
+     * @return item The items that makes up the room
+     */
     private static ArrayList<Item> loadRoom(){
         ArrayList<Item> items = new ArrayList<>();
         try{
-            BufferedImage floor = ImageIO.read(ExperimentRoom.class.getResource("Assets/ExitFloor.png"));
-            BufferedImage sideWall = ImageIO.read(ExperimentRoom.class.getResource("Assets/ExitSideWall.png"));
-            BufferedImage bg = ImageIO.read(ExperimentRoom.class.getResource("Assets/Background.png"));  
-            BufferedImage exit = ImageIO.read(ExperimentRoom.class.getResource("Assets/Exit.png"));
-            BufferedImage wall = ImageIO.read(ExperimentRoom.class.getResource("Assets/ExitWall.png"));
-            BufferedImage clock = ImageIO.read(ExperimentRoom.class.getResource("Assets/Clock.png"));
-            BufferedImage laserUp = ImageIO.read(ExperimentRoom.class.getResource("Assets/LaserUp.png"));
-            BufferedImage clone = ImageIO.read(ExperimentRoom.class.getResource("Assets/Clone.png"));
-            BufferedImage shelf = ImageIO.read(ExperimentRoom.class.getResource("Assets/Bookshelf.png"));
-            BufferedImage pot = ImageIO.read(ExperimentRoom.class.getResource("Assets/PlantPot.png"));
-            BufferedImage cabinet = ImageIO.read(ExperimentRoom.class.getResource("Assets/Cabinet.png"));
-            BufferedImage table = ImageIO.read(ExperimentRoom.class.getResource("Assets/TableFront.png"));
-            BufferedImage metalTable = ImageIO.read(ExperimentRoom.class.getResource("Assets/MetalTableFront.png"));
-            BufferedImage metalTableSide = ImageIO.read(ExperimentRoom.class.getResource("Assets/MetalTableSide.png"));
-            BufferedImage tableSide = ImageIO.read(ExperimentRoom.class.getResource("Assets/TableSide.png"));
-            BufferedImage paper = ImageIO.read(ExperimentRoom.class.getResource("Assets/WrittenPaper.png"));
-            BufferedImage laser = ImageIO.read(ExperimentRoom.class.getResource("Assets/Laser.png"));
-            BufferedImage box = ImageIO.read(ExperimentRoom.class.getResource("Assets/Box.png"));
-            BufferedImage tank = ImageIO.read(ExperimentRoom.class.getResource("Assets/Tank.png"));
-            BufferedImage paperStack = ImageIO.read(ExperimentRoom.class.getResource("Assets/PaperStack.png"));
+            BufferedImage floor = ImageIO.read(TheresholdRoom.class.getResource("Assets/ExitFloor.png"));
+            BufferedImage sideWall = ImageIO.read(TheresholdRoom.class.getResource("Assets/ExitSideWall.png"));
+            BufferedImage bg = ImageIO.read(TheresholdRoom.class.getResource("Assets/Background.png"));  
+            BufferedImage exit = ImageIO.read(TheresholdRoom.class.getResource("Assets/Exit.png"));
+            BufferedImage wall = ImageIO.read(TheresholdRoom.class.getResource("Assets/ExitWall.png"));
+            BufferedImage clock = ImageIO.read(TheresholdRoom.class.getResource("Assets/Clock.png"));
+            BufferedImage laserUp = ImageIO.read(TheresholdRoom.class.getResource("Assets/LaserUp.png"));
+            BufferedImage clone = ImageIO.read(TheresholdRoom.class.getResource("Assets/Clone.png"));
+            BufferedImage shelf = ImageIO.read(TheresholdRoom.class.getResource("Assets/Bookshelf.png"));
+            BufferedImage pot = ImageIO.read(TheresholdRoom.class.getResource("Assets/PlantPot.png"));
+            BufferedImage cabinet = ImageIO.read(TheresholdRoom.class.getResource("Assets/Cabinet.png"));
+            BufferedImage table = ImageIO.read(TheresholdRoom.class.getResource("Assets/TableFront.png"));
+            BufferedImage metalTable = ImageIO.read(TheresholdRoom.class.getResource("Assets/MetalTableFront.png"));
+            BufferedImage metalTableSide = ImageIO.read(TheresholdRoom.class.getResource("Assets/MetalTableSide.png"));
+            BufferedImage tableSide = ImageIO.read(TheresholdRoom.class.getResource("Assets/TableSide.png"));
+            BufferedImage paper = ImageIO.read(TheresholdRoom.class.getResource("Assets/WrittenPaper.png"));
+            BufferedImage laser = ImageIO.read(TheresholdRoom.class.getResource("Assets/Laser.png"));
+            BufferedImage box = ImageIO.read(TheresholdRoom.class.getResource("Assets/Box.png"));
+            BufferedImage tank = ImageIO.read(TheresholdRoom.class.getResource("Assets/Tank.png"));
+            BufferedImage paperStack = ImageIO.read(TheresholdRoom.class.getResource("Assets/PaperStack.png"));
 
             //walls
             items.add(new Item(0, 0, 1024, 768, bg));
@@ -124,3 +151,4 @@ public class TheresholdRoom extends Room{
         return items;
     }
 }
+
