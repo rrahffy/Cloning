@@ -39,7 +39,9 @@ public abstract class Room{
     public void drawRoom(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
         for(Item item : items){
-            g2d.drawImage(item.getItem(), item.getX(), item.getY(), item.getWidth(), item.getHeight(), null);
+            if(item.getItem() != null){
+                g2d.drawImage(item.getItem(), item.getX(), item.getY(), item.getWidth(), item.getHeight(), null);
+            }
         }
     }
 
@@ -59,7 +61,33 @@ public abstract class Room{
         this.items = newRoomItems;
     }
 
-    // public void checkCollision(Player player){
+    /**
+     * This translates the item to a new location
+     * @param oldPlacement The item's original location
+     * @param newX The item's new x position
+     * @param newY The item's new y position
+     */
+    public void translate(BufferedImage oldPlacement, int newX, int newY){
+        for(Item item : items){
+            if(item.getItem() == oldPlacement){
+                item.changeX(newX);
+                item.changeY(newY);
+                break;
+            }
+        }
+    }
 
-    // }
+    /**
+     * This changes the item's appearance while retaining the location
+     * @param oldItem The item's old look 
+     * @param newItem The new item's look 
+     */
+    public void replaceItem(BufferedImage oldItem, BufferedImage newItem){
+        for(Item item : items){
+            if(item.getItem() == oldItem){
+                item.changeItem(newItem);
+                break;
+            }
+        }
+    }
 }
