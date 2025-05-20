@@ -1,13 +1,25 @@
+/**
+	This is the transition scene before the third room. It gives context to the players who their identities are. 
+	
+	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
+	@version 20 May 2025
+	
+	I have not discussed the Java language code in my program 
+	with anyone other than my instructor or the teaching assistants 
+	assigned to this course.
+
+	I have not used Java language code obtained from another student, 
+	or any other unauthorized source, either modified or unmodified.
+
+	If any Java language code or documentation used in my program 
+	was obtained from another source, such as a textbook or website, 
+	that has been clearly noted with a proper citation in the comments 
+	of my program.
+**/
+
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * This class extends JComponent and overrides the paintComponent method
- * in order to create the custom drawing for the game.
- * 
- * @author Maria Angelica Muñoz and Rafael Jack Rafanan
- * @version 20 May 2025
- */
 public class GameCanvas extends JComponent {
     
     private Player player;
@@ -16,6 +28,15 @@ public class GameCanvas extends JComponent {
     private boolean gameStarted = false;
     private boolean gameEnded = false;
     private String gameMessage = "";
+    
+    // Added variables for enemy visibility and interaction
+    private boolean enemyVisible = true;
+    private boolean enemyInteracting = false;
+    private String enemyInteractionTarget = "";
+    
+    // Added variables for temporary messages
+    private String tempMessage = "";
+    private long tempMessageEndTime = 0;
     
     /**
      * Constructor for GameCanvas
@@ -94,6 +115,38 @@ public class GameCanvas extends JComponent {
     }
     
     /**
+     * Sets whether the enemy player is visible
+     * 
+     * @param visible Whether the enemy player is visible
+     */
+    public void setEnemyVisible(boolean visible) {
+        this.enemyVisible = visible;
+    }
+    
+    /**
+     * Sets whether the enemy player is interacting with something
+     * 
+     * @param interacting Whether the enemy is interacting
+     * @param targetObject The object the enemy is interacting with
+     */
+    public void setEnemyInteracting(boolean interacting, String targetObject) {
+        this.enemyInteracting = interacting;
+        this.enemyInteractionTarget = targetObject;
+    }
+    
+    /**
+     * Shows a temporary message for a specified duration
+     * 
+     * @param message The message to display
+     * @param duration The duration in milliseconds to display the message
+     */
+    public void showMessage(String message, int duration) {
+        this.tempMessage = message;
+        this.tempMessageEndTime = System.currentTimeMillis() + duration;
+        repaint();
+    }
+    
+    /**
      * Overrides the paintComponent method to draw the game
      * 
      * @param g The Graphics object to draw with
@@ -131,11 +184,21 @@ public class GameCanvas extends JComponent {
             currentRoom.drawRoom(g2d);
         }
         
-        // Draw players if they exist
-        if (enemyPlayer != null) {
+        // Draw enemy player if they exist and are visible
+        if (enemyPlayer != null && enemyVisible) {
             enemyPlayer.drawSprite(g2d);
+            
+            // Draw interaction indicator if enemy is interacting
+            if (enemyInteracting) {
+                g2d.setColor(Color.YELLOW);
+                g2d.setFont(new Font("Arial", Font.BOLD, 12));
+                g2d.drawString("Interacting...", 
+                              (int)enemyPlayer.getX() - 30, 
+                              (int)enemyPlayer.getY() - 20);
+            }
         }
         
+        // Draw player if they exist
         if (player != null) {
             player.drawSprite(g2d);
         }
@@ -144,5 +207,14 @@ public class GameCanvas extends JComponent {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.PLAIN, 12));
         g2d.drawString("Use arrow keys to move. Space to interact.", 10, 20);
+        
+        // Draw temporary message if active
+        if (!tempMessage.isEmpty() && System.currentTimeMillis() < tempMessageEndTime) {
+            g2d.setColor(new Color(0, 0, 0, 180)); // Semi-transparent black
+            g2d.fillRoundRect(getWidth()/2 - 150, 50, 300, 40, 10, 10);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 16));
+            g2d.drawString(tempMessage, getWidth()/2 - 140, 75);
+        }
     }
 }

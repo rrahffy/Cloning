@@ -1,10 +1,22 @@
 /**
- * This class contains the code that manages the player's appearance and functionality.
- * It extends PlayerSprite with additional game-specific functionality.
- * 
- * @author Maria Angelica Muñoz and Rafael Jack Rafanan
- * @version 20 May 2025
- */
+	This class contains the code that manages the player's appearance and functionality.
+    It extends PlayerSprite with additional game specific functionality.
+	
+	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
+	@version 20 May 2025
+	
+	I have not discussed the Java language code in my program 
+	with anyone other than my instructor or the teaching assistants 
+	assigned to this course.
+
+	I have not used Java language code obtained from another student, 
+	or any other unauthorized source, either modified or unmodified.
+
+	If any Java language code or documentation used in my program 
+	was obtained from another source, such as a textbook or website, 
+	that has been clearly noted with a proper citation in the comments 
+	of my program.
+**/
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -253,7 +265,6 @@ public class Player extends PlayerSprite {
         return currentRoom;
     }
 
-    @Override
     public double getSize() {
         return this.size;
     }
