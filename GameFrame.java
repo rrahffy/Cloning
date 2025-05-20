@@ -39,23 +39,12 @@ public class GameFrame extends JFrame {
    private int playerID;
    private ReadFromServer rfsRunnable;
    private WriteToServer wtsRunnable;
-   private Room currentRoom;
-   private int currentRoomIndex = 0;
-   private boolean isInTransition = false;
-  
-   // List of rooms in order of progression
-   private String[] roomNames = {
-       "ExperimentRoom", "CloningRoom", "PhaseRoom", "TheresholdRoom", "EndingRoom"
-   };
+   private RoomManager roomManager;
   
    // Game state flags
    private boolean gameStarted = false;
    private boolean gameEnded = false;
    private String gameMessage = "";
-  
-   // Constants for collision detection
-   private final int COLLISION_BUFFER = 5;
-
 
    /**
     * Constructor for GameFrame
@@ -83,9 +72,11 @@ public class GameFrame extends JFrame {
        contentPane.setPreferredSize(new Dimension(width, height));
       
        createPlayers();
-       loadCurrentRoom();
+       
+       // Initialize the RoomManager with the player
+       roomManager = new RoomManager(player, playerID, width, height);
       
-       gameCanvas = new GameCanvas(player, enemyPlayer, currentRoom);
+       gameCanvas = new GameCanvas(player, enemyPlayer, roomManager.getCurrentRoom());
        gameCanvas.setGameStarted(gameStarted);
        contentPane.add(gameCanvas);
       
@@ -111,7 +102,7 @@ public class GameFrame extends JFrame {
       } else {
           player = new Player(600, 500, 50, Color.RED, 2);
           player.setName("A2");
-          enemyPlayer = new Player(400, 500, 50, Color.BLUE, 1);
+          enemyPlayer = new Player(500, 500, 50, Color.BLUE, 1);
           enemyPlayer.setName("A1");
       }
      
@@ -120,82 +111,19 @@ public class GameFrame extends JFrame {
       System.out.println("Player position: " + player.getX() + ", " + player.getY());
       System.out.println("Enemy position: " + enemyPlayer.getX() + ", " + enemyPlayer.getY());
   }
-  
-   /**
-    * Loads the current room based on currentRoomIndex
-    */
-   private void loadCurrentRoom() {
-       // Save player position if needed for room transitions
-       double playerX = 0;
-       double playerY = 0;
-      
-       if (player != null) {
-           playerX = player.getX();
-           playerY = player.getY();
-       }
-      
-       // Create the appropriate room based on index
-       switch (roomNames[currentRoomIndex]) {
-           case "ExperimentRoom":
-               currentRoom = new ExperimentRoom();
-               break;
-           case "CloningRoom":
-               currentRoom = new CloningRoom();
-               break;
-           case "PhaseRoom":
-               currentRoom = new PhaseRoom(playerID);
-               break;
-           case "TheresholdRoom":
-               currentRoom = new ThresholdRoom();
-               break;
-           case "EndingRoom":
-               currentRoom = new EndingRoom(playerID);
-               break;
-           default:
-               currentRoom = new ExperimentRoom();
-       }
-      
-       // Set the player's current room and position them appropriately
-       if (player != null) {
-           player.setCurrentRoom(currentRoom);
-          
-           // If this is a room transition, position player appropriately
-           if (isInTransition) {
-               // Position the player near the entry point of the new room
-               if (currentRoomIndex > 0) {
-                   // Coming from previous room - position at entry door
-                   player.setX(width / 2);
-                   player.setY(550); // Position near the bottom of the screen
-               } else {
-                   // First room or special case - use default position
-                   player.setX(playerX);
-                   player.setY(playerY);
-               }
-               isInTransition = false;
-           }
-       }
-      
-       // Update the game canvas with the new room
-       if (gameCanvas != null) {
-           gameCanvas.setCurrentRoom(currentRoom);
-       }
-   }
-  
+
    /**
     * Moves to the next room
     */
    public void goToNextRoom() {
-       currentRoomIndex++;
-       if (currentRoomIndex >= roomNames.length) {
-           currentRoomIndex = roomNames.length - 1;
-       }
-      
-       isInTransition = true;
-       loadCurrentRoom();
-      
+       int roomIndex = roomManager.goToNextRoom();
+       
+       // Update the game canvas with the new room
+       gameCanvas.setCurrentRoom(roomManager.getCurrentRoom());
+       
        // Notify the server about room change
        if (wtsRunnable != null) {
-           wtsRunnable.sendRoomChange(currentRoomIndex);
+           wtsRunnable.sendRoomChange(roomIndex);
        }
    }
   
@@ -204,14 +132,13 @@ public class GameFrame extends JFrame {
     * @param roomIndex The index of the room to change to
     */
    public void changeRoom(int roomIndex) {
-       if (roomIndex >= 0 && roomIndex < roomNames.length) {
-           currentRoomIndex = roomIndex;
-           isInTransition = true;
-           loadCurrentRoom();
-          
+       if (roomManager.changeRoom(roomIndex)) {
+           // Update the game canvas with the new room
+           gameCanvas.setCurrentRoom(roomManager.getCurrentRoom());
+           
            // Notify the server about room change
            if (wtsRunnable != null) {
-               wtsRunnable.sendRoomChange(currentRoomIndex);
+               wtsRunnable.sendRoomChange(roomIndex);
            }
        }
    }
@@ -229,7 +156,7 @@ public class GameFrame extends JFrame {
               }
              
               // Don't process movement for transition scenes
-              if (currentRoom instanceof PhaseRoom || currentRoom instanceof EndingRoom) {
+              if (roomManager.isTransitionScene()) {
                   gameCanvas.repaint();
                   return;
               }
@@ -243,7 +170,7 @@ public class GameFrame extends JFrame {
               if (up) {
                   player.setDirection(Player.Direction.UP);
                   double newY = player.getY() - speed;
-                  if (!checkCollision(player.getX(), newY)) {
+                  if (!roomManager.checkCollision(player.getX(), newY, player.getSize())) {
                       player.moveV(-speed);
                       moved = true;
                   }
@@ -251,7 +178,7 @@ public class GameFrame extends JFrame {
               if (down) {
                   player.setDirection(Player.Direction.DOWN);
                   double newY = player.getY() + speed;
-                  if (!checkCollision(player.getX(), newY)) {
+                  if (!roomManager.checkCollision(player.getX(), newY, player.getSize())) {
                       player.moveV(speed);
                       moved = true;
                   }
@@ -259,7 +186,7 @@ public class GameFrame extends JFrame {
               if (left) {
                   player.setDirection(Player.Direction.LEFT);
                   double newX = player.getX() - speed;
-                  if (!checkCollision(newX, player.getY())) {
+                  if (!roomManager.checkCollision(newX, player.getY(), player.getSize())) {
                       player.moveH(-speed);
                       moved = true;
                   }
@@ -267,19 +194,27 @@ public class GameFrame extends JFrame {
               if (right) {
                   player.setDirection(Player.Direction.RIGHT);
                   double newX = player.getX() + speed;
-                  if (!checkCollision(newX, player.getY())) {
+                  if (!roomManager.checkCollision(newX, player.getY(), player.getSize())) {
                       player.moveH(speed);
                       moved = true;
                   }
               }
              
               // Check for door interactions
-              checkDoorInteractions();
+              String doorInteraction = roomManager.checkDoorInteractions(player.getX(), player.getY(), interacting);
+              if (doorInteraction != null) {
+                  // This sends the door interaction to the server
+                  wtsRunnable.sendInteraction(doorInteraction, roomManager.getCurrentRoomIndex());
+              }
              
               // Check for object interactions
-              if (interacting) {
-                  checkObjectInteractions();
-                  // Don't reset interacting here - it's reset on key release
+              String objectInteraction = roomManager.checkObjectInteractions(player.getX(), player.getY(), interacting);
+              if (objectInteraction != null) {
+                  // Send object interaction to the server
+                  wtsRunnable.sendInteraction(objectInteraction, roomManager.getCurrentRoomIndex());
+                  
+                  // Show appropriate message based on the interaction
+                  showInteractionMessage(objectInteraction);
               }
              
               gameCanvas.repaint();
@@ -288,205 +223,39 @@ public class GameFrame extends JFrame {
        animationTimer = new Timer(interval, al);
        animationTimer.start();
    }
-  
+   
    /**
-    * Checks if the player is colliding with any items in the room
-    * @param newX The new X position to check
-    * @param newY The new Y position to check
-    * @return true if there's a collision, false otherwise
+    * Shows a message based on the type of interaction
+    * 
+    * @param interactionType The type of interaction
     */
-   private boolean checkCollision(double newX, double newY) {
-       if (currentRoom == null) return false;
-      
-       ArrayList<Item> items = currentRoom.getItems();
-       int playerSize = (int) player.getSize();
-       int halfPlayerSize = playerSize / 2;
-      
-       Rectangle playerBounds = new Rectangle(
-           (int) newX - halfPlayerSize,
-           (int) newY - halfPlayerSize,
-           playerSize,
-           playerSize
-       );
-      
-       for (Item item : items) {
-           // Skip background items and floor items that should be walkable
-           if (item.getY() < 40 && item.getHeight() > 500) continue; // Skip background
-           if (item.getY() == 40 && item.getHeight() == 540) continue; // Skip floor
-          
-           // Also skip special items that should be walkable
-           // You might need to adjust this based on your game's assets
-           if (item.getWidth() <= 30 && item.getHeight() <= 30) continue; // Small items
-          
-           Rectangle itemBounds = new Rectangle(
-               item.getX() + COLLISION_BUFFER,
-               item.getY() + COLLISION_BUFFER,
-               item.getWidth() - (2 * COLLISION_BUFFER),
-               item.getHeight() - (2 * COLLISION_BUFFER)
-           );
-          
-           if (playerBounds.intersects(itemBounds)) {
-               return true; // Collision detected
-           }
-       }
-      
-       // Check boundaries of the screen
-       if (newX - halfPlayerSize < 10 || newX + halfPlayerSize > width - 10 ||
-           newY - halfPlayerSize < 10 || newY + halfPlayerSize > height - 10) {
-           return true;
-       }
-      
-       return false;
-   }
-  
-  /**
-    * Checks if the player is near a door and can interact with it
-    */
-  private void checkDoorInteractions() {
-      // Only check door interactions in ExperimentRoom and CloningRoom
-      // For the TheresholdRoom, the exit door is special and handled differently
-      if (currentRoomIndex > 1) return;
-     
-      // Check if player is in door area (common for both rooms)
-      if (player.getY() >= 480 && player.getY() <= 580) {  // Adjusted Y coordinates to be higher up
-          double doorWidth = 50;
-          double leftDoorX = 480 - doorWidth/2;
-          double rightDoorX = 520 - doorWidth/2;
-         
-          boolean isAtLeftDoor = player.getX() >= leftDoorX && player.getX() <= leftDoorX + doorWidth;
-          boolean isAtRightDoor = player.getX() >= rightDoorX && player.getX() <= rightDoorX + doorWidth;
-         
-          // If player is at either door
-          if (isAtLeftDoor || isAtRightDoor) {
-              if (interacting) {
-                  // This sends the door interaction to the server
-                  wtsRunnable.sendInteraction("door", currentRoomIndex);
-              }
-          }
-      }
-     
-      // Check for exit door in TheresholdRoom
-      if (currentRoom instanceof ThresholdRoom) {
-          // Check if player is near the exit door
-          if (player.getY() >= 480 && player.getY() <= 580 &&
-              player.getX() >= 810 && player.getX() <= 900) {
-              if (interacting) {
-                  wtsRunnable.sendInteraction("exit", currentRoomIndex);
-              }
-          }
-      }
-  }
-  
-   /**
-    * Checks if the player is near an interactive object and can interact with it
-    */
-  private void checkObjectInteractions() {
-       // Get objects that are nearby to the player for interaction
-       // We'll define "nearby" as within a certain radius
-       double playerX = player.getX();
-       double playerY = player.getY();
-       int interactionRadius = 50; // Adjust this value based on your game design
-      
-       // In the ExperimentRoom, check for specific objects
-       if (currentRoom instanceof ExperimentRoom) {
-           // Check for items like bookshelf, button, cabinet, etc.
-           if (isNearObject(playerX, playerY, 30, 370, 70, 105, interactionRadius)) {
-               // Bookshelf interaction
-               wtsRunnable.sendInteraction("bookshelf", currentRoomIndex);
+   private void showInteractionMessage(String interactionType) {
+       switch (interactionType) {
+           case "bookshelf":
                gameCanvas.showMessage("Examining bookshelf...", 1000);
-           }
-           else if (isNearObject(playerX, playerY, 70, 115, 10, 5, interactionRadius)) {
-               // Button interaction
-               wtsRunnable.sendInteraction("button", currentRoomIndex);
+               break;
+           case "button":
                gameCanvas.showMessage("Button pressed!", 1000);
-           }
-           else if (isNearObject(playerX, playerY, 100, 380, 35, 95, interactionRadius)) {
-               // Cabinet interaction
-               wtsRunnable.sendInteraction("cabinet", currentRoomIndex);
+               break;
+           case "cabinet":
                gameCanvas.showMessage("Looking in cabinet...", 1000);
-           }
-           else if (isNearObject(playerX, playerY, 150, 410, 45, 35, interactionRadius)) {
-               // Laptop interaction
-               wtsRunnable.sendInteraction("laptop", currentRoomIndex);
+               break;
+           case "laptop":
                gameCanvas.showMessage("Using laptop...", 1000);
-           }
-       }
-       // In the CloningRoom, check for specific objects
-       else if (currentRoom instanceof CloningRoom) {
-           // Check for items like screens, clones, etc.
-           if (isNearObject(playerX, playerY, 160, 370, 100, 60, interactionRadius)) {
-               // Wall screen interaction
-               wtsRunnable.sendInteraction("wallscreen", currentRoomIndex);
+               break;
+           case "wallscreen":
                gameCanvas.showMessage("Examining wall screen...", 1000);
-           }
-           else if (isNearObject(playerX, playerY, 290, 25, 60, 100, interactionRadius)) {
-               // Hologram screen interaction
-               wtsRunnable.sendInteraction("hologram", currentRoomIndex);
+               break;
+           case "hologram":
                gameCanvas.showMessage("Interacting with hologram...", 1000);
-           }
-       }
-       // In the TheresholdRoom, check for specific objects
-       else if (currentRoom instanceof ThresholdRoom) {
-           // Check for items, avoiding lasers
-           if (isNearLaser(playerX, playerY, interactionRadius)) {
-               // Player touched a laser
-               wtsRunnable.sendInteraction("laser", currentRoomIndex);
+               break;
+           case "laser":
                gameCanvas.showMessage("Warning! Laser detected!", 1000);
-           }
+               break;
+           default:
+               // No message for other interactions
+               break;
        }
-   }
-  
-   /**
-    * Checks if player is near a specific object
-    * @param playerX Player's X position
-    * @param playerY Player's Y position
-    * @param objX Object's X position
-    * @param objY Object's Y position
-    * @param objWidth Object's width
-    * @param objHeight Object's height
-    * @param radius Interaction radius
-    * @return true if player is near the object
-    */
-   private boolean isNearObject(double playerX, double playerY,
-                             int objX, int objY, int objWidth, int objHeight,
-                             int radius) {
-       // Calculate center of object
-       int objCenterX = objX + (objWidth / 2);
-       int objCenterY = objY + (objHeight / 2);
-      
-       // Calculate distance between player and object center
-       double distance = Math.sqrt(
-           Math.pow(playerX - objCenterX, 2) +
-           Math.pow(playerY - objCenterY, 2)
-       );
-      
-       return distance <= radius;
-   }
-  
-   /**
-    * Checks if player is near any laser in TheresholdRoom
-    * @param playerX Player's X position
-    * @param playerY Player's Y position
-    * @param radius Interaction radius
-    * @return true if player is near a laser
-    */
-   private boolean isNearLaser(double playerX, double playerY, int radius) {
-       if (!(currentRoom instanceof ThresholdRoom)) return false;
-      
-       ArrayList<Item> items = currentRoom.getItems();
-      
-       for (Item item : items) {
-           // Check if this item is a laser (based on image name or size)
-           String imageName = item.getItem().toString();
-           if (imageName.contains("Laser") || imageName.contains("LaserUp")) {
-               if (isNearObject(playerX, playerY, item.getX(), item.getY(),
-                               item.getWidth(), item.getHeight(), radius)) {
-                   return true;
-               }
-           }
-       }
-      
-       return false;
    }
 
 
@@ -506,11 +275,11 @@ public class GameFrame extends JFrame {
               }
              
               // Skip movement input for transition scenes
-              if (currentRoom instanceof PhaseRoom || currentRoom instanceof EndingRoom) {
+              if (roomManager.isTransitionScene()) {
                   if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
                       // Allow space key to advance transition scenes
                       interacting = true;
-                      wtsRunnable.sendInteraction("advance", currentRoomIndex);
+                      wtsRunnable.sendInteraction("advance", roomManager.getCurrentRoomIndex());
                   }
                   return;
               }
@@ -659,7 +428,7 @@ public class GameFrame extends JFrame {
                        }
                       
                        // Check if enemy is in a different room
-                       if (enemyRoom != currentRoomIndex) {
+                       if (enemyRoom != roomManager.getCurrentRoomIndex()) {
                            // Enemy is in a different room, don't render them
                            gameCanvas.setEnemyVisible(false);
                        } else {
@@ -682,10 +451,9 @@ public class GameFrame extends JFrame {
                       
                        if (success) {
                            // Room change was successful
-                           currentRoomIndex = roomIndex;
-                           isInTransition = true;
-                           loadCurrentRoom();
-                           System.out.println("Room changed to " + roomNames[currentRoomIndex]);
+                           roomManager.changeRoom(roomIndex);
+                           gameCanvas.setCurrentRoom(roomManager.getCurrentRoom());
+                           System.out.println("Room changed to index " + roomIndex);
                        } else {
                            // Room change failed - maybe room is locked?
                            System.out.println("Room change failed. Room may be locked.");
@@ -694,8 +462,8 @@ public class GameFrame extends JFrame {
                    }
                    else if (messageType.equals("room_unlock")) {
                        int roomIndex = dataIn.readInt();
-                       System.out.println("Room " + roomNames[roomIndex] + " has been unlocked!");
-                       gameCanvas.showMessage(roomNames[roomIndex] + " has been unlocked!", 2000);
+                       System.out.println("Room index " + roomIndex + " has been unlocked!");
+                       gameCanvas.showMessage("A new room has been unlocked!", 2000);
                    }
                    else if (messageType.equals("phase_transition")) {
                        // Time to show the phase room revealing player identities
@@ -712,11 +480,12 @@ public class GameFrame extends JFrame {
                        gameEnded = true;
                        gameMessage = message;
                       
-                       // Show appropriate ending based on winner
-                       EndingRoom endingRoom = (EndingRoom) currentRoom;
-                       endingRoom.changePlayerID(winnerID);
-                       gameCanvas.setCurrentRoom(endingRoom);
-                      
+                       // Update the ending room with winner ID
+                       roomManager.updateEndingRoom(winnerID);
+                       
+                       // Change to ending room and update canvas
+                       changeRoom(4); // EndingRoom
+                       
                        gameCanvas.setGameEnded(true);
                        gameCanvas.setGameMessage(message);
                        System.out.println("Game over: " + message);
@@ -745,21 +514,21 @@ public class GameFrame extends JFrame {
        }
 
 
-        public void waitForStartingMsg() {
-            try {
-                String msgType = dataIn.readUTF();
+    public void waitForStartingMsg() {
+        try {
+            String msgType = dataIn.readUTF();
            
-                if (msgType.equals("start")) {
-                    String startMsg = dataIn.readUTF();
-                    System.out.println("Message from server: " + startMsg);
+            if (msgType.equals("start")) {
+                String startMsg = dataIn.readUTF();
+                System.out.println("Message from server: " + startMsg);
                
-                    gameStarted = true;
-                    gameCanvas.setGameStarted(true);
-
-                    Thread readThread = new Thread(rfsRunnable);
-                    Thread writeThread = new Thread(wtsRunnable);
-                    readThread.start();
-                    writeThread.start();
+                gameStarted = true;
+                gameCanvas.setGameStarted(true);
+               
+                Thread readThread = new Thread(rfsRunnable);
+                Thread writeThread = new Thread(wtsRunnable);
+                readThread.start();
+                writeThread.start();
                 }
             } catch (IOException ex) {
                 System.out.println("IOException from waitForStartingMsg()");
@@ -790,7 +559,7 @@ public class GameFrame extends JFrame {
                       dataOut.writeUTF("position");
                       dataOut.writeDouble(player.getX());
                       dataOut.writeDouble(player.getY());
-                      dataOut.writeInt(currentRoomIndex);
+                      dataOut.writeInt(roomManager.getCurrentRoomIndex());
                      
                       // Send the player's current direction
                       dataOut.writeInt(player.getDirection().ordinal());

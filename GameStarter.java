@@ -29,7 +29,7 @@ public class GameStarter {
         System.out.println("Connecting to game server...");
         
         GameFrame gameFrame = new GameFrame(1024, 768);
-        gameFrame.setUpGUI();  // Set up GUI first to initialize gameCanvas
-        gameFrame.connectToServer();  // Then connect to server
+        gameFrame.connectToServer();  // Connect to server first to get playerID
+        // GUI setup will be handled by connectToServer() after getting player ID
     }
 }
