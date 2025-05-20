@@ -89,6 +89,29 @@ public class Item {
     public BufferedImage getItem(){
         return roomItem;
     }
+	
+    /**
+     * To change the item's x position
+     * @param x The item's new x position
+     */
+    public void changeX(int x){
+        this.x = x;
+    }
 
+    /**
+     * To change the item's y position
+     * @param y The item's new y position
+     */
+    public void changeY(int y){
+        this.y = y;
+    }
+
+    /**
+     * To change the item shown
+     * @param roomItem The new item shown
+     */
+    public void changeItem(BufferedImage roomItem){
+        this.roomItem = roomItem;
+    }
 }
 
