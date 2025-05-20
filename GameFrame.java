@@ -205,6 +205,13 @@ public class GameFrame extends JFrame {
               if (doorInteraction != null) {
                   // This sends the door interaction to the server
                   wtsRunnable.sendInteraction(doorInteraction, roomManager.getCurrentRoomIndex());
+                  
+                  // Show appropriate message for doors
+                  if (doorInteraction.equals("door")) {
+                      gameCanvas.showMessage("Attempting to open door...", 1000);
+                  } else if (doorInteraction.equals("exit")) {
+                      gameCanvas.showMessage("Attempting to exit...", 1000);
+                  }
               }
              
               // Check for object interactions
@@ -213,8 +220,8 @@ public class GameFrame extends JFrame {
                   // Send object interaction to the server
                   wtsRunnable.sendInteraction(objectInteraction, roomManager.getCurrentRoomIndex());
                   
-                  // Show appropriate message based on the interaction
-                  showInteractionMessage(objectInteraction);
+                  // Handle the interaction locally for immediate feedback
+                  handleLocalInteraction(objectInteraction);
               }
              
               gameCanvas.repaint();
@@ -222,6 +229,32 @@ public class GameFrame extends JFrame {
        };
        animationTimer = new Timer(interval, al);
        animationTimer.start();
+   }
+   
+   /**
+    * This method handles interactions locally as well as sending them to the server.
+    * @param objectType The type of object being interacted with
+    */
+   private void handleLocalInteraction(String objectType) {
+       if (roomManager == null || roomManager.getCurrentRoom() == null) {
+           return;
+       }
+       
+       // Show interaction message UI feedback
+       showInteractionMessage(objectType);
+       
+       // Process the interaction in the current room
+       boolean processed = roomManager.getCurrentRoom().processInteraction(objectType);
+       
+       if (processed) {
+           // Update the game canvas to reflect changes
+           gameCanvas.repaint();
+           
+           // Play sound effect if you have a sound system
+           // playSound("interaction");
+           
+           System.out.println("Interaction processed locally: " + objectType);
+       }
    }
    
    /**

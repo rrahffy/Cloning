@@ -1,6 +1,7 @@
 /**
-	This is the transition scene before the third room. It gives context to the players who their identities are. 
-	
+    This class extends JComponent and overrides the paintComponent method to
+    render the game state, players, rooms, and UI elements for the game.
+
 	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
 	@version 20 May 2025
 	
@@ -143,6 +144,24 @@ public class GameCanvas extends JComponent {
     public void showMessage(String message, int duration) {
         this.tempMessage = message;
         this.tempMessageEndTime = System.currentTimeMillis() + duration;
+        
+        // Make the message more noticeable with a temporary animation effect
+        // This will create a small "popup" effect when messages appear
+        javax.swing.Timer animationTimer = new javax.swing.Timer(50, new java.awt.event.ActionListener() {
+            private int frameCount = 0;
+            private final int maxFrames = 5;
+            
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                frameCount++;
+                if (frameCount > maxFrames) {
+                    ((javax.swing.Timer)e.getSource()).stop();
+                }
+                repaint(); // Force repaint for animation effect
+            }
+        });
+        animationTimer.start();
+        
         repaint();
     }
     
@@ -208,13 +227,46 @@ public class GameCanvas extends JComponent {
         g2d.setFont(new Font("Arial", Font.PLAIN, 12));
         g2d.drawString("Use arrow keys to move. Space to interact.", 10, 20);
         
-        // Draw temporary message if active
+        // Draw temporary message with animation if active
         if (!tempMessage.isEmpty() && System.currentTimeMillis() < tempMessageEndTime) {
-            g2d.setColor(new Color(0, 0, 0, 180)); // Semi-transparent black
-            g2d.fillRoundRect(getWidth()/2 - 150, 50, 300, 40, 10, 10);
+            // Calculate animation effects - pulse effect for the message box
+            long timeRemaining = tempMessageEndTime - System.currentTimeMillis();
+            long totalDuration = 2000; // typical duration
+            float ratio = Math.min(1.0f, (float)timeRemaining / totalDuration);
+            
+            // Start with semi-transparent black background
+            g2d.setColor(new Color(0, 0, 0, 180)); 
+            
+            // Draw message box with slight pulsing effect
+            int boxWidth = 300;
+            int boxHeight = 50;
+            int boxX = getWidth()/2 - boxWidth/2;
+            int boxY = 50;
+            
+            // Draw rounded rectangle with slight pulsing effect
+            g2d.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 15, 15);
+            
+            // Add a colored border based on message type
+            if (tempMessage.contains("locked") || tempMessage.contains("Warning")) {
+                g2d.setColor(new Color(255, 50, 50, 200)); // Red for warnings
+            } else if (tempMessage.contains("solved") || tempMessage.contains("unlocked")) {
+                g2d.setColor(new Color(50, 255, 50, 200)); // Green for success
+            } else {
+                g2d.setColor(new Color(50, 150, 255, 200)); // Blue for information
+            }
+            
+            // Draw the border
+            g2d.setStroke(new BasicStroke(3));
+            g2d.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 15, 15);
+            
+            // Draw the message text
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 16));
-            g2d.drawString(tempMessage, getWidth()/2 - 140, 75);
+            
+            // Center the text
+            java.awt.FontMetrics fm = g2d.getFontMetrics();
+            int textWidth = fm.stringWidth(tempMessage);
+            g2d.drawString(tempMessage, getWidth()/2 - textWidth/2, boxY + 30);
         }
     }
 }

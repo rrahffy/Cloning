@@ -21,6 +21,7 @@ import java.awt.image.*;
 import java.util.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 
 public class CloningRoom extends Room{
 
@@ -70,6 +71,10 @@ public class CloningRoom extends Room{
             BufferedImage testTube = ImageIO.read(CloningRoom.class.getResource("Assets/TestTube.png"));
             BufferedImage plantPod = ImageIO.read(CloningRoom.class.getResource("Assets/BigPlantPod.png"));
             BufferedImage plantPodLayered = ImageIO.read(CloningRoom.class.getResource("Assets/ManyPlantPod.png"));
+            
+            // For interaction: ensure we have the active variants loaded
+            BufferedImage wallScreenActive = ImageIO.read(CloningRoom.class.getResource("Assets/WallScreenActive.png"));
+            BufferedImage hologramActive = ImageIO.read(CloningRoom.class.getResource("Assets/HologramActive.png"));
 
             //both has it
             items.add(new Item(0, 0, 1024, 768, bg));
@@ -134,5 +139,47 @@ public class CloningRoom extends Room{
         }
         return items;
     }
+    
+    /**
+     * Process interactions with objects in the CloningRoom
+     * @param objectType The type of object being interacted with
+     * @return true if the interaction was processed, false otherwise
+     */
+    @Override
+    public boolean processInteraction(String objectType) {
+        System.out.println("CloningRoom: Processing interaction with: " + objectType);
+        
+        switch(objectType) {
+            case "wallscreen":
+                // Custom logic for wallscreen
+                replaceItem("Assets/WallScreen.png", "Assets/WallScreenActive.png");
+                return true;
+                
+            case "hologram":
+                // Custom logic for hologram
+                replaceItem("Assets/HologramScreen.png", "Assets/HologramActive.png");
+                
+                // Show a special animation
+                new Timer(2000, e -> {
+                    replaceItem("Assets/HologramActive.png", "Assets/HologramScreen.png");
+                    ((Timer)e.getSource()).stop();
+                }).start();
+                return true;
+                
+            case "button":
+                // Custom logic for button
+                replaceItem("Assets/Button.png", "Assets/ButtonPressed.png");
+                
+                // Add timed logic to show something happening
+                new Timer(500, e -> {
+                    replaceItem("Assets/ButtonPressed.png", "Assets/Button.png");
+                    ((Timer)e.getSource()).stop();
+                }).start();
+                return true;
+                
+            default:
+                // Fall back to default implementation
+                return super.processInteraction(objectType);
+        }
+    }
 }
-

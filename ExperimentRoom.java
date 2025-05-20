@@ -21,6 +21,7 @@ import java.awt.image.*;
 import java.util.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 
 
 public class ExperimentRoom extends Room{
@@ -153,5 +154,48 @@ public class ExperimentRoom extends Room{
             e.printStackTrace();
         }
         return items;
+    }
+    
+    /**
+     * Process interactions with objects in the ExperimentRoom
+     * @param objectType The type of object being interacted with
+     * @return true if the interaction was processed, false otherwise
+     */
+    @Override
+    public boolean processInteraction(String objectType) {
+        System.out.println("ExperimentRoom: Processing interaction with: " + objectType);
+        
+        switch(objectType) {
+            case "bookshelf":
+                // Custom logic for ExperimentRoom bookshelf
+                replaceItem("Assets/Bookshelf.png", "Assets/BookshelfSafe.png");
+                return true;
+                
+            case "button":
+                // Custom logic for button - maybe it opens a secret panel
+                replaceItem("Assets/Button.png", "Assets/ButtonPressed.png");
+                
+                // Add timed logic to show something happening
+                new Timer(500, e -> {
+                    replaceItem("Assets/ButtonPressed.png", "Assets/Button.png");
+                    // Maybe reveal a hidden item or door
+                    ((Timer)e.getSource()).stop();
+                }).start();
+                return true;
+                
+            case "cabinet":
+                // Change cabinet appearance to show it's been opened
+                replaceItem("Assets/Cabinet.png", "Assets/CabinetOpen.png");
+                return true;
+                
+            case "laptop":
+                // Change laptop appearance to show it's been used
+                replaceItem("Assets/Laptop.png", "Assets/LaptopOn.png");
+                return true;
+                
+            default:
+                // Fall back to default implementation
+                return super.processInteraction(objectType);
+        }
     }
 }

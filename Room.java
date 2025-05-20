@@ -23,6 +23,7 @@ import java.util.*;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import javax.swing.Timer;
 
 public abstract class Room{
     private ArrayList<Item> items;
@@ -81,19 +82,94 @@ public abstract class Room{
     }
 
     /**
+     * Process interactions with objects in the room
+     * @param objectType The type of object to interact with
+     * @return true if the interaction was processed, false otherwise
+     */
+    public boolean processInteraction(String objectType) {
+        // Default implementation for room interactions
+        System.out.println("Processing interaction with: " + objectType);
+        
+        switch(objectType) {
+            case "bookshelf":
+                // Change bookshelf appearance to show it's been examined
+                replaceItem("Assets/Bookshelf.png", "Assets/BookshelfSafe.png");
+                return true;
+                
+            case "button":
+                // Show button being pressed
+                replaceItem("Assets/Button.png", "Assets/ButtonPressed.png");
+                // After a delay, change it back
+                new Timer(500, e -> {
+                    replaceItem("Assets/ButtonPressed.png", "Assets/Button.png");
+                    ((Timer)e.getSource()).stop();
+                }).start();
+                return true;
+                
+            case "cabinet":
+                // Change cabinet appearance to show it's been opened
+                replaceItem("Assets/Cabinet.png", "Assets/CabinetOpen.png");
+                return true;
+                
+            case "laptop":
+                // Change laptop appearance to show it's been used
+                replaceItem("Assets/Laptop.png", "Assets/LaptopOn.png");
+                return true;
+                
+            case "wallscreen":
+                // Change wallscreen appearance to show it's activated
+                replaceItem("Assets/WallScreen.png", "Assets/WallScreenActive.png");
+                return true;
+                
+            case "hologram":
+                // Change hologram appearance to show interaction
+                replaceItem("Assets/Hologram.png", "Assets/HologramActive.png"); 
+                return true;
+                
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Helper method to replace an item based on its image filename
+     * 
+     * @param oldImageName The filename of the image to replace
+     * @param newImageName The filename of the new image
+     * @return true if replacement was successful
+     */
+    public boolean replaceItem(String oldImageName, String newImageName) {
+        try {
+            for(Item item : getItems()) {
+                if(item.getItem() != null) {
+                    String itemPath = item.getItem().toString();
+                    if(itemPath.contains(oldImageName)) {
+                        item.changeItem(ImageIO.read(getClass().getResource(newImageName)));
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * This changes the item's appearance while retaining the location
+     * Legacy method - kept for compatibility
      */
     public void replaceItem(){
-        for(Item item : items){
-            BufferedImage itemList = item.getItem();
-            
-            try{
-                if(itemList == ImageIO.read(getClass().getResource("Assets/Bookshelf.png"))){
+        try {
+            for(Item item : items){
+                BufferedImage itemList = item.getItem();
+                
+                if(itemList != null && itemList.toString().contains("Assets/Bookshelf.png")){
                     item.changeItem(ImageIO.read(getClass().getResource("Assets/BookshelfSafe.png")));
                 }
-            } catch (IOException e){
-                e.printStackTrace();
             }
+        } catch (IOException e){
+            e.printStackTrace();
         }
     }
 }
