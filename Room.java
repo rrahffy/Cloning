@@ -79,14 +79,17 @@ public abstract class Room{
 
     /**
      * This changes the item's appearance while retaining the location
-     * @param oldItem The item's old look 
-     * @param newItem The new item's look 
      */
-    public void replaceItem(BufferedImage oldItem, BufferedImage newItem){
+    public void replaceItem(){
         for(Item item : items){
-            if(item.getItem() == oldItem){
-                item.changeItem(newItem);
-                break;
+            BufferedImage itemList = item.getItem();
+            
+            try{
+                if(itemList == ImageIO.read(getClass().getResource("Assets/Bookshelf.png"))){
+                    item.changeItem(ImageIO.read(getClass().getResource("Assets/BookshelfSafe.png")));
+                }
+            } catch (IOException e){
+                e.printStackTrace();
             }
         }
     }
