@@ -96,13 +96,10 @@ public class ExperimentRoom extends Room{
 
             //a1 side only 
             items.add(new Item(200, 10, 10, 280, sideWall));
-            items.add(new Item(20, 190, 30, 100, wall));
-            items.add(new Item(100, 190, 100, 100, wall));
             items.add(new Item(50, 45, 50, 40, screen));
             items.add(new Item(30, 90, 90, 60, tableFront));
             items.add(new Item(70, 115, 10, 5, button));
             items.add(new Item(160, 65, 20, 20, comms));
-            items.add(new Item(50, 190, 50, 100, lockedDoor));
             items.add(new Item(310, 80, 70, 120, bed));
             items.add(new Item(420, 80, 70, 120, bed));
             items.add(new Item(390, 60, 25, 90, drip));
