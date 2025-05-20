@@ -22,12 +22,12 @@ import java.util.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class TheresholdRoom extends Room{
+public class ThresholdRoom extends Room{
 
     /**
      * This loads the last room
      */
-    public TheresholdRoom(){
+    public ThresholdRoom(){
         super(loadRoom());
     }
 
