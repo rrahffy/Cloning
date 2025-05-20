@@ -20,6 +20,9 @@
 
 import java.awt.*;
 import java.util.*;
+import java.awt.image.*;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 
 public abstract class Room{
     private ArrayList<Item> items;
