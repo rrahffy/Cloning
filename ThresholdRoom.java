@@ -38,26 +38,26 @@ public class ThresholdRoom extends Room{
     private static ArrayList<Item> loadRoom(){
         ArrayList<Item> items = new ArrayList<>();
         try{
-            BufferedImage floor = ImageIO.read(TheresholdRoom.class.getResource("Assets/ExitFloor.png"));
-            BufferedImage sideWall = ImageIO.read(TheresholdRoom.class.getResource("Assets/ExitSideWall.png"));
-            BufferedImage bg = ImageIO.read(TheresholdRoom.class.getResource("Assets/Background.png"));  
-            BufferedImage exit = ImageIO.read(TheresholdRoom.class.getResource("Assets/Exit.png"));
-            BufferedImage wall = ImageIO.read(TheresholdRoom.class.getResource("Assets/ExitWall.png"));
-            BufferedImage clock = ImageIO.read(TheresholdRoom.class.getResource("Assets/Clock.png"));
-            BufferedImage laserUp = ImageIO.read(TheresholdRoom.class.getResource("Assets/LaserUp.png"));
-            BufferedImage clone = ImageIO.read(TheresholdRoom.class.getResource("Assets/Clone.png"));
-            BufferedImage shelf = ImageIO.read(TheresholdRoom.class.getResource("Assets/Bookshelf.png"));
-            BufferedImage pot = ImageIO.read(TheresholdRoom.class.getResource("Assets/PlantPot.png"));
-            BufferedImage cabinet = ImageIO.read(TheresholdRoom.class.getResource("Assets/Cabinet.png"));
-            BufferedImage table = ImageIO.read(TheresholdRoom.class.getResource("Assets/TableFront.png"));
-            BufferedImage metalTable = ImageIO.read(TheresholdRoom.class.getResource("Assets/MetalTableFront.png"));
-            BufferedImage metalTableSide = ImageIO.read(TheresholdRoom.class.getResource("Assets/MetalTableSide.png"));
-            BufferedImage tableSide = ImageIO.read(TheresholdRoom.class.getResource("Assets/TableSide.png"));
-            BufferedImage paper = ImageIO.read(TheresholdRoom.class.getResource("Assets/WrittenPaper.png"));
-            BufferedImage laser = ImageIO.read(TheresholdRoom.class.getResource("Assets/Laser.png"));
-            BufferedImage box = ImageIO.read(TheresholdRoom.class.getResource("Assets/Box.png"));
-            BufferedImage tank = ImageIO.read(TheresholdRoom.class.getResource("Assets/Tank.png"));
-            BufferedImage paperStack = ImageIO.read(TheresholdRoom.class.getResource("Assets/PaperStack.png"));
+            BufferedImage floor = ImageIO.read(ThresholdRoom.class.getResource("Assets/ExitFloor.png"));
+            BufferedImage sideWall = ImageIO.read(ThresholdRoom.class.getResource("Assets/ExitSideWall.png"));
+            BufferedImage bg = ImageIO.read(ThresholdRoom.class.getResource("Assets/Background.png"));  
+            BufferedImage exit = ImageIO.read(ThresholdRoom.class.getResource("Assets/Exit.png"));
+            BufferedImage wall = ImageIO.read(ThresholdRoom.class.getResource("Assets/ExitWall.png"));
+            BufferedImage clock = ImageIO.read(ThresholdRoom.class.getResource("Assets/Clock.png"));
+            BufferedImage laserUp = ImageIO.read(ThresholdRoom.class.getResource("Assets/LaserUp.png"));
+            BufferedImage clone = ImageIO.read(ThresholdRoom.class.getResource("Assets/Clone.png"));
+            BufferedImage shelf = ImageIO.read(ThresholdRoom.class.getResource("Assets/Bookshelf.png"));
+            BufferedImage pot = ImageIO.read(ThresholdRoom.class.getResource("Assets/PlantPot.png"));
+            BufferedImage cabinet = ImageIO.read(ThresholdRoom.class.getResource("Assets/Cabinet.png"));
+            BufferedImage table = ImageIO.read(ThresholdRoom.class.getResource("Assets/TableFront.png"));
+            BufferedImage metalTable = ImageIO.read(ThresholdRoom.class.getResource("Assets/MetalTableFront.png"));
+            BufferedImage metalTableSide = ImageIO.read(ThresholdRoom.class.getResource("Assets/MetalTableSide.png"));
+            BufferedImage tableSide = ImageIO.read(ThresholdRoom.class.getResource("Assets/TableSide.png"));
+            BufferedImage paper = ImageIO.read(ThresholdRoom.class.getResource("Assets/WrittenPaper.png"));
+            BufferedImage laser = ImageIO.read(ThresholdRoom.class.getResource("Assets/Laser.png"));
+            BufferedImage box = ImageIO.read(ThresholdRoom.class.getResource("Assets/Box.png"));
+            BufferedImage tank = ImageIO.read(ThresholdRoom.class.getResource("Assets/Tank.png"));
+            BufferedImage paperStack = ImageIO.read(ThresholdRoom.class.getResource("Assets/PaperStack.png"));
 
             //walls
             items.add(new Item(0, 0, 1024, 768, bg));
