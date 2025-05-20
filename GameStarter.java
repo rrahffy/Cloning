@@ -1,5 +1,6 @@
 /**
 	This class contains the main method that will start the game from the player's side.
+    Run class for each player.
 	
 	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
 	@version 20 May 2025

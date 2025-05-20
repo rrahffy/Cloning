@@ -1,5 +1,6 @@
 /**
-	This is where the basic functions for Player are.
+	This is where the basic functions for Player are. Will be used for
+    replacing players as squares if images don't load.
 	
 	@author Maria Angelica Muñoz (243172) and Rafael Jack Rafanan (246338)
 	@version 20 May 2025

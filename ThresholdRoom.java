@@ -150,5 +150,22 @@ public class ThresholdRoom extends Room{
         }
         return items;
     }
+    
+    /**
+     * Processes interactions with objects in the ThresholdRoom
+     * @param objectType The type of object being interacted with
+     * @return boolean True if the interaction was processed, false otherwise
+     */
+    @Override
+    public boolean processInteraction(String objectType) {
+        System.out.println("ThresholdRoom: Processing interaction with: " + objectType);
+        if (objectType.equals("laser")) {
+            // Show visual feedback for laser interaction
+            // Maybe change player sprite to indicate damage
+            return true;
+        }
+        // Fall back to default implementation
+        return super.processInteraction(objectType);
+    }
 }
 
